@@ -1,6 +1,4 @@
-
 use std::{
-    collections::binary_heap::Iter,
     fs::File,
     io::{self, prelude::*, BufReader},
     path::Path,
