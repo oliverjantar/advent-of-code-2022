@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, error::Error};
+use std::error::Error;
 
 use shared::file_reader::FileReader;
 
