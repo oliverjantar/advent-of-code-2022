@@ -78,7 +78,7 @@ impl Processor {
                 ("cd", "/") => return self.root.clone(),
                 ("cd", _) => {
                     let path = format!("{}{}/", current.borrow().path, params[2]);
-                    println!("path {}", path);
+
                     return self
                         .directories
                         .get(&path)
