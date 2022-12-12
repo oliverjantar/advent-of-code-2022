@@ -84,7 +84,6 @@ fn process_rounds(monkeys: &mut Vec<Monkey>, rounds: i32, worry_number: i64) {
                 monkeys[item.0].items.push_back(item.1);
             }
         }
-        // println!("x: {}, {:?}", x, monkeys);
 
         x += 1;
     }
