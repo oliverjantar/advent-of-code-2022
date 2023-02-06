@@ -116,13 +116,17 @@ impl Sand {
                 }
                 SandState::Stay => {
                     self.map.insert(grain);
+
+                    if grain == Point(500, 0) {
+                        return false;
+                    }
                     return true;
                 }
             }
 
-            if grain.1 >= self.lowest_point {
-                return false;
-            }
+            // if grain.1 >= self.lowest_point {
+            //     return false;
+            // }
         }
     }
 
@@ -139,7 +143,7 @@ impl Sand {
     }
 
     fn fall_until_it_can(&mut self) -> i32 {
-        let mut number_of_sand = 0;
+        let mut number_of_sand = 1;
 
         while self.fall() {
             number_of_sand += 1;
@@ -154,7 +158,9 @@ mod tests {
 
     #[test]
     fn test_fall_until_it_can() {
-        let points = HashSet::from([
+        let floor = Point::get_points_from_str("200,11 -> 700,11");
+
+        let mut points = HashSet::from([
             Point(498, 4),
             Point(498, 5),
             Point(498, 6),
@@ -177,12 +183,16 @@ mod tests {
             Point(494, 9),
         ]);
 
+        points.extend(floor.iter());
+
         let mut x = Sand {
             map: points,
             lowest_point: 9,
         };
 
-        assert_eq!(x.fall_until_it_can(), 24);
+        assert_eq!(x.fall_until_it_can(), 93);
+
+        // assert_eq!(x.fall_until_it_can(), 24);
     }
 
     #[test]
