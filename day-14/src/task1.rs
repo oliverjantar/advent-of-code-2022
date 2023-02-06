@@ -3,18 +3,26 @@ use std::{collections::HashSet, error::Error};
 use shared::file_reader::FileReader;
 
 pub fn run() -> Result<(), Box<dyn Error>> {
-    let mut result = 0;
+    let mut map: HashSet<Point> = HashSet::new();
 
-    let mut data = HashSet::new();
-    for line in FileReader::open("./input2", 40)? {
+    for line in FileReader::open("./input", 40)? {
         if let Ok(line) = line {
             let line = line.trim_end();
 
-            data.insert(String::from(line));
+            let points = Point::get_points_from_str(line);
+
+            map.extend(points.iter());
         }
     }
 
-    println!("{}", result);
+    let min = map.iter().max_by(|x, y| x.1.cmp(&y.1)).unwrap().1;
+
+    let mut x = Sand {
+        map,
+        lowest_point: min,
+    };
+
+    println!("{}", x.fall_until_it_can());
     Ok(())
 }
 
@@ -112,7 +120,7 @@ impl Sand {
                 }
             }
 
-            if grain.1 <= self.lowest_point {
+            if grain.1 >= self.lowest_point {
                 return false;
             }
         }
@@ -129,11 +137,104 @@ impl Sand {
             SandState::Stay
         }
     }
+
+    fn fall_until_it_can(&mut self) -> i32 {
+        let mut number_of_sand = 0;
+
+        while self.fall() {
+            number_of_sand += 1;
+        }
+        number_of_sand
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_fall_until_it_can() {
+        let points = HashSet::from([
+            Point(498, 4),
+            Point(498, 5),
+            Point(498, 6),
+            Point(497, 6),
+            Point(496, 6),
+            Point(503, 4),
+            Point(502, 4),
+            Point(502, 5),
+            Point(502, 6),
+            Point(502, 7),
+            Point(502, 8),
+            Point(502, 9),
+            Point(501, 9),
+            Point(500, 9),
+            Point(499, 9),
+            Point(498, 9),
+            Point(497, 9),
+            Point(496, 9),
+            Point(495, 9),
+            Point(494, 9),
+        ]);
+
+        let mut x = Sand {
+            map: points,
+            lowest_point: 9,
+        };
+
+        assert_eq!(x.fall_until_it_can(), 24);
+    }
+
+    #[test]
+    fn check_sand_fall() {
+        let points = HashSet::from([
+            Point(498, 4),
+            Point(498, 5),
+            Point(498, 6),
+            Point(497, 6),
+            Point(496, 6),
+            Point(503, 4),
+            Point(502, 4),
+            Point(502, 5),
+            Point(502, 6),
+            Point(502, 7),
+            Point(502, 8),
+            Point(502, 9),
+            Point(501, 9),
+            Point(500, 9),
+            Point(499, 9),
+            Point(498, 9),
+            Point(497, 9),
+            Point(496, 9),
+            Point(495, 9),
+            Point(494, 9),
+        ]);
+
+        let mut x = Sand {
+            map: points,
+            lowest_point: 9,
+        };
+
+        assert!(x.fall());
+
+        assert!(x.map.contains(&Point(500, 8)));
+
+        assert!(x.fall());
+
+        assert!(x.map.contains(&Point(499, 8)));
+
+        assert!(x.fall());
+
+        assert!(x.map.contains(&Point(501, 8)));
+
+        assert!(x.fall());
+
+        assert!(x.map.contains(&Point(500, 7)));
+
+        assert!(x.fall());
+
+        assert!(x.map.contains(&Point(498, 8)));
+    }
 
     #[test]
     fn test_get_points_from_string() {
